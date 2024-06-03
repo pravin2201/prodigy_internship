@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tic-Tac-Toe</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #e0f7fa; /* Light blue background */
+  }
+  .container {
+    text-align: center;
+    background-color: #007bb6; /* Darker blue container */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  h1 {
+    margin-bottom: 20px;
+    color: #ffffff; /* White text for the title */
+  }
+  #game-board {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-template-rows: repeat(3, 100px);
+    gap: 5px;
+  }
+  .cell {
+    background-color: #ffffff; /* White cells */
+    border: 2px solid #007bb6; /* Darker blue borders */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  .cell:hover {
+    background-color: #b3e5fc; /* Light blue on hover */
+  }
+  #reset-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #007bb6; /* Darker blue button */
+    color: #ffffff; /* White text for the button */
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+  }
+  #reset-button:hover {
+    background-color: #005f8a; /* Darker blue on hover */
+  }
+  #game-status {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #ffffff; /* White text for the game status */
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Tic-Tac-Toe</h1>
+  <div id="game-board">
+    <div class="cell" data-index="0"></div>
+    <div class="cell" data-index="1"></div>
+    <div class="cell" data-index="2"></div>
+    <div class="cell" data-index="3"></div>
+    <div class="cell" data-index="4"></div>
+    <div class="cell" data-index="5"></div>
+    <div class="cell" data-index="6"></div>
+    <div class="cell" data-index="7"></div>
+    <div class="cell" data-index="8"></div>
+  </div>
+  <button id="reset-button">Reset Game</button>
+  <p id="game-status"></p>
+</div>
+<script>
+  const gameBoard = document.getElementById('game-board');
+  const cells = document.querySelectorAll('.cell');
+  const resetButton = document.getElementById('reset-button');
+  const gameStatus = document.getElementById('game-status');
+
+  let currentPlayer = 'X';
+  let gameState = Array(9).fill(null);
+  let isGameActive = true;
+
+  const winningConditions = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+  ];
+
+  function handleCellClick(event) {
+    const clickedCell = event.target;
+    const clickedCellIndex = parseInt(clickedCell.getAttribute('data-index'));
+
+    if (gameState[clickedCellIndex] !== null || !isGameActive) {
+      return;
+    }
+
+    gameState[clickedCellIndex] = currentPlayer;
+    clickedCell.textContent = currentPlayer;
+
+    if (checkWin()) {
+      gameStatus.textContent = `Player ${currentPlayer} wins!`;
+      isGameActive = false;
+    } else if (gameState.every(cell => cell !== null)) {
+      gameStatus.textContent = 'It\'s a draw!';
+      isGameActive = false;
+    } else {
+      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+    }
+  }
+
+  function checkWin() {
+    for (let condition of winningConditions) {
+      const [a, b, c] = condition;
+      if (gameState[a] && gameState[a] === gameState[b] && gameState[a] === gameState[c]) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function resetGame() {
+    currentPlayer = 'X';
+    gameState = Array(9).fill(null);
+    isGameActive = true;
+    gameStatus.textContent = '';
+    cells.forEach(cell => (cell.textContent = ''));
+  }
+
+  cells.forEach(cell => cell.addEventListener('click', handleCellClick));
+  resetButton.addEventListener('click', resetGame);
+</script>
+</body>
+</html>
